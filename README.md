@@ -12,12 +12,12 @@ slo-git1 est une machine virtuelle fonctionnant sous incus. Le service Gitea tou
 - **Taille disque** : 50 GiB
 - **IP** : 192.168.16.6 (vlan16)
 - **Clavier** : fr
-- **Utilisateur par défaut** : tubes
-- **Mot de passe par défaut** : heurtevent.org
 
 ## Accès
+- **Utilisateur par défaut** : tubes
+- **Mot de passe par défaut** : heurtevent.org
 - Accès SSH avec le nom d'utilisateur `tubes` : `ssh tubes@192.168.16.6`
-- Identifiant sauvegardé dans le [dossier IT/dav.heurtevent.org/node/slo-git1 du gestionnaire de mot de passe Vaultwarden](https://pass.heurtevent.org)
+- **Identifiant actuel** : Sauvegardé dans le [dossier IT/dav.heurtevent.org/node/slo-git1 du gestionnaire de mot de passe Vaultwarden](https://pass.heurtevent.org)
 
 
 ## Dossiers distants importants
