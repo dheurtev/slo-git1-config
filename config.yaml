@@ -1,0 +1,71 @@
+architecture: x86_64
+config:
+  cloud-init.network-config: |-
+    version: 2
+    ethernets:
+      enp5s0:
+        addresses:
+          - 192.168.16.6/24
+        nameservers:
+          search:
+          - "dav.heurtevent.org"
+          addresses:
+            - 192.168.32.2
+            - 199.168.24.2
+        dhcp4: false
+        dhcp6: false
+        routes:
+          - to: default
+            via: 192.168.16.1
+            metric: 10
+  cloud-init.user-data: "#cloud-config\n\n#hostname\nhostname: slo-git1\nfqdn: slo-git1.dav.heurtevent.org\ncreate_hostname_file:
+    true\nprefer_fqdn_over_hostname: true\npreserve_hostname: false\n\n#timezone\ntimezone:
+    Europe/Paris\n\n#keyboard + locale\nkeyboard:\n  layout: fr\nlocale: fr_FR\n\n#users\nusers:\n
+    \ # random word as user\n  - name: tubes\n    shell: /bin/bash\n    groups: users,
+    admin, sudo\n\n#users passwords\nchpasswd: \n  expire: false\n  # default initial
+    password is heurtevent.org (openssl passwd -6)\n  users:\n    - name: tubes\n
+    \     password: $6$6Wj4.miZaT.YW0ek$renf3IjusKOow83yU7HIl7rNeKj8e/5g2kmDbpfobFcPEMI0B7vnieyoiMP3qDoYAvPHvDU5naTTTEvE.ZBVm.\n
+    \     type: hash\n  \n#ssh\nssh_pwauth: false\nallow_public_ssh_keys: true\ndisable_root:
+    true\ndisable_root_opts: no-port-forwarding,no-agent-forwarding,no-X11-forwarding\n#ssh_authorized_keys:
+    []\nssh_deletekeys: true\nssh_genkeytypes: [rsa, ecdsa, ed25519]\n#ssh_keys: {}\nssh_publish_hostkeys:\n
+    \ blacklist: [rsa]\n  enabled: true\nssh_quiet_keygen: true\n\n#packages\npackage_update:
+    true\npackage_upgrade: true\npackage_reboot_if_required: true\npackages:\n  -
+    ssh-import-id\n  - git\n  - nano\n  - curl\n  - wget\n  # nodejs \n  #- npm\n
+    \ # python\n  # - python3\n  # - python3-pip \n\n#import ssh keys\nssh_import_id:
+    ['gh:dheurtev']\n\n#NTP\nntp:\n  enabled: true\n  servers:\n    - 192.168.32.2\n
+    \   - 199.168.24.2\n\n#Random seed\nrandom_seed:\n  # random string generated
+    with tr -dc 0-9A-F </dev/urandom | head -c 128; echo\n  data: E0A2BCC7E6C32C1272340292638B62A0FE2B07CF59336516CD11F7ED2A30C3E9929EFE02FA59A24EB214B22BE00FA0C2989C2062172DDA0B84FC0A6E81BEBC25\n
+    \ encoding: raw\n  file: /dev/urandom\n\n#Write files\n#write_files:\n#  - content:
+    |\n#    15 * * * * root ship_logs\n#  path: /etc/crontab\n#  append: true\n#  permissions:
+    '0755'\n\n#runcmd - first boot\n#runcmd:\n#  - [touch, /run/cloud.init.ran]\n#bootcmd
+    - each boot\n#bootcmd:\n#"
+  image.architecture: amd64
+  image.description: Debian trixie amd64 (20260402_05:24)
+  image.os: Debian
+  image.release: trixie
+  image.serial: "20260402_05:24"
+  image.type: disk-kvm.img
+  image.variant: cloud
+  limits.cpu: "2"
+  limits.memory: 2048MiB
+  volatile.base_image: a69e32b9d4cfe8dc3780752954293277875eaf32c2dc94ea2680d6841a7055aa
+  volatile.cloud-init.instance-id: 4395dfda-0c59-4a1b-b5e6-ea47c6ad71f6
+  volatile.enp5s0.host_name: tap521c19b8
+  volatile.enp5s0.hwaddr: 10:66:6a:09:85:89
+  volatile.last_state.power: RUNNING
+  volatile.last_state.ready: "false"
+  volatile.uuid: ee71b6fb-1be5-4683-9bd1-47c0e2d60907
+  volatile.uuid.generation: ee71b6fb-1be5-4683-9bd1-47c0e2d60907
+  volatile.vm.definition: pc-q35-10.0
+  volatile.vsock_id: "172027185"
+devices:
+  root:
+    path: /
+    pool: default
+    size: 50GiB
+    type: disk
+ephemeral: false
+profiles:
+- vlan16
+stateful: false
+description: ""

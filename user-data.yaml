@@ -1,0 +1,182 @@
+#cloud-config
+
+#hostname
+hostname: slo-git1
+fqdn: slo-git1.dav.heurtevent.org
+create_hostname_file: true
+prefer_fqdn_over_hostname: true
+preserve_hostname: false
+
+#timezone
+timezone: Europe/Paris
+
+#keyboard + locale
+keyboard:
+  layout: fr
+locale: fr_FR
+
+#users
+users:
+  # random word as user
+  - name: tubes
+    shell: /bin/bash
+    groups: users, admin, sudo
+
+#users passwords
+chpasswd: 
+  expire: false
+  # default initial password is heurtevent.org (openssl passwd -6)
+  users:
+    - name: tubes
+      password: $6$6Wj4.miZaT.YW0ek$renf3IjusKOow83yU7HIl7rNeKj8e/5g2kmDbpfobFcPEMI0B7vnieyoiMP3qDoYAvPHvDU5naTTTEvE.ZBVm.
+      type: hash
+  
+#ssh
+#ssh_authorized_keys: []
+ssh_deletekeys: true
+ssh_genkeytypes: [rsa, ecdsa, ed25519]
+#ssh_keys: {}
+ssh_publish_hostkeys:
+  blacklist: [rsa]
+  enabled: true
+ssh_quiet_keygen: true
+
+#packages
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - ssh-import-id
+  # main
+  - busybox
+  - rsync
+  - openssh-server
+  # sysadmin
+  - git
+  - vim
+  - nano
+  - curl
+  - wget
+  - htop
+  - jq
+  # networking
+  - net-tools
+  - traceroute
+  - bind9-dnsutils
+  - bind9-host
+  - ntpsec-ntpdate
+  - iftop
+  # security
+  - ufw
+  - fail2ban
+  - haveged
+  - etckeeper
+  # nodejs
+  #- npm
+
+  # python
+  # - python3
+  # - python3-pip
+
+  ## Apps
+  - podman
+
+#import ssh keys
+ssh_import_id: ['gh:dheurtev']
+
+#NTP
+ntp:
+  enabled: true
+  servers:
+    - 192.168.32.2
+    - 199.168.24.2
+
+#Random seed
+random_seed:
+  # random string generated with tr -dc 0-9A-F </dev/urandom | head -c 128; echo
+  data: E0A2BCC7E6C32C1272340292638B62A0FE2B07CF59336516CD11F7ED2A30C3E9929EFE02FA59A24EB214B22BE00FA0C2989C2062172DDA0B84FC0A6E81BEBC25
+  encoding: raw
+  file: /dev/urandom
+
+#Write files
+#write_files:
+#  - content: |
+#    15 * * * * root ship_logs
+#  path: /etc/crontab
+#  append: true
+#  permissions: '0755'
+
+# Set hostnames
+write_files:
+  - path: /etc/hosts
+    content: |
+      127.0.0.1   localhost
+      127.0.1.1     git1.dav.heurtevent.org git1
+      192.168.16.6  git1.dav.heurtevent.org git1
+      # The following lines are desirable for IPv6 capable hosts
+      ::1     localhost ip6-localhost ip6-loopback
+      ff02::1 ip6-allnodes
+      ff02::2 ip6-allrouters
+
+  # Configure sshd
+  - path: /etc/ssh/sshd_config.d/hardening.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      # Security hardening applied via cloud-init
+      PermitRootLogin no
+      PasswordAuthentication no
+      PubkeyAuthentication yes
+      MaxAuthTries 3
+      AllowAgentForwarding no
+      X11Forwarding no
+      ClientAliveInterval 300
+      ClientAliveCountMax 2
+      Subsystem sftp /usr/lib/openssh/sftp-server
+
+  #fail2ban
+  - path: /etc/fail2ban/jail.local
+    content: |
+      [sshd]
+      enabled = true
+      maxretry = 5
+      bantime = 3600
+    permissions: '0644'
+
+#runcmd - first boot
+runcmd:
+  # Apply sysctl settings immediately
+  - sysctl --system
+  # Configure firewall
+  # enable and start firewall
+  - systemctl enable --now ufw
+  # allow outgoing
+  - ufw default allow outgoing
+  # ssh
+  - ufw allow ssh
+  # dns
+  - ufw allow 53/udp
+  # dhcp client
+  - ufw allow 68/udp
+  # ntp
+  - ufw allow 123/udp
+  ## Gitea
+  # ssh
+  - ufw allow 2222/tcp
+  # https
+  - ufw allow 13000/tcp
+  # block others
+  - ufw default deny incoming
+  # activate firewall
+  - ufw --force enable
+  # enable and start fail2ban
+  - systemctl enable --now fail2ban
+  # enable and start etckeeper
+  - systemctl enable --now etckeeper
+  # import SSH key
+  - ssh-import-id gh:dheurtev
+
+#  - [touch, /run/cloud.init.ran]
+#bootcmd - each boot
+#bootcmd:
+#

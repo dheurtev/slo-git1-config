@@ -1,0 +1,26 @@
+# remote
+REMOTE='slo-hv1'
+# user
+USER='tubes'
+# instance
+INSTANCE="${REMOTE}:slo-git1"
+# image
+IMAGE="${REMOTE}:debian/trixie/cloud/vm"
+# resources type
+TYPE='t3.small'
+# profile
+PROFILE='vlan16'
+# disk size
+DISK_SIZE=50 
+# disk
+DISK="root,size=${DISK_SIZE}GiB"
+# --vm if VM, '' if container
+VM='--vm'
+
+# Cloud init
+USER_DATA_FILE='./user-data.yaml'
+NET_CONFIG_FILE='./netplan.yaml'
+CONFIG_FILE="./config.yaml"
+
+# Github key
+SSH_KEY="gh:dheurtev"
