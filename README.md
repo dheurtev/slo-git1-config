@@ -1,6 +1,6 @@
 # SLO-GIT1 - Déploiement et configuration
 
-slo-git1 est une machine virtuelle fonctionnant sous incus.
+slo-git1 est une machine virtuelle fonctionnant sous incus contenant le service GIT interne tournant avec le logiciel Gitea.
 
 - **Hôte** : slo-git1
 - **Hyperviseur** : slo-hv1
