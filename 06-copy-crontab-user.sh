@@ -11,6 +11,6 @@ incus file push $file $INSTANCE/home/$USER/
 ## Add the content to crontab
 ### For user
 echo "Setting up crontab for user file ..." 
-incus exec $INSTANCE -- "su $USER && crontab /home/$USER/crontab-user.txt"
+incus exec --user 1000 $INSTANCE -- crontab /home/$USER/crontab-user.txt
 
 echo "Completed"
