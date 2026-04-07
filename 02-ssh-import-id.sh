@@ -4,6 +4,6 @@ source ./vars
 
 echo "Adding $SSH_KEY to $INSTANCE ..."
 
-incus exec $INSTANCE -- "su $USER && ssh-import-id $SSH_KEY"
+incus exec --user 1000 $INSTANCE -- ssh-import-id $SSH_KEY
 
 echo "Completed"
